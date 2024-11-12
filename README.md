@@ -31,3 +31,6 @@
 1. GUI:
 
 ![File Sys GUI Screen Short](./images/file_system_gui_image.png)
+
+2. File Sys 2:
+![File Sys Implementation 2](./images/file_sys_gui_implementation_2.png)
