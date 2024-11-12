@@ -9,6 +9,6 @@ int create_file(const char *name);
 int write_to_file(const char *name, const char *content);
 std::string  read_file(const char *name);
 int change_directory(const char *path);
-int list_directory_contents();
-
+std::string list_directory_contents(const char *path);
+int delete_file(const char *name);
 #endif // FILE_OPERATIONS_H

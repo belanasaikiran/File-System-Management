@@ -92,20 +92,29 @@ int change_directory(const char *path) {
     return 0;
 }
 
-int list_directory_contents() {
-    DIR *dir;
-    struct dirent *entry;
-
-    dir = opendir(".");
-    if (dir == NULL) {
-        perror("opendir failed");
+int delete_file(const char *name) {
+    if (unlink(name) == -1) {
+        perror("unlink failed");
         return errno;
+    } else {
+        std::cout << "File deleted: " << name << std::endl;
+    }
+    return 0;
+}
+
+std::string list_directory_contents(const char *path) {
+    DIR *dir = opendir(path);
+    if (dir == NULL) {
+        return "Error: " + std::string(strerror(errno));
     }
 
+    struct dirent *entry;
+    std::string contents;
     while ((entry = readdir(dir)) != NULL) {
-        std::cout << entry->d_name << std::endl;
+        contents += entry->d_name;
+        contents += "\n";
     }
 
     closedir(dir);
-    return 0;
+    return contents;
 }

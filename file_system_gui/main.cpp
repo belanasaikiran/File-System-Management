@@ -6,8 +6,11 @@
 #include "file_operations.h"
 
 // Variables for user input
+char dirName[64] = "";
+char fileName[64] = "";
+char fileContent[1024] = "";
 char statusMessage[256] = "Welcome to the File System GUI!"; // Holds the latest status message
-// std::string fileContents; // Holds the contents of the file read
+std::string dirContents;
 
 int main() {
     // Setup GLFW
@@ -46,10 +49,7 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    // Variables for user input
-    char dirName[64] = "";
-    char fileName[64] = "";
-    char fileContent[1024] = "";
+
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -102,8 +102,19 @@ int main() {
             }
         }
 
+        ImGui::SameLine();
+        // delete file
+        if (ImGui::Button("Delete File")) {
+            int result = delete_file(fileName);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "File deleted successfully: %s", fileName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error deleting file: %s (%s)", fileName, strerror(result));
+            }
+        }
+
         // Write to file
-        ImGui::InputTextMultiline("Content to Write", fileContent, IM_ARRAYSIZE(fileContent));
+        ImGui::InputTextMultiline("Content to Read/Write", fileContent, IM_ARRAYSIZE(fileContent));
         if (ImGui::Button("Write to File")) {
             int result = write_to_file(fileName, fileContent);
             if (result == 0) {
@@ -128,10 +139,29 @@ int main() {
             }
         }
 
-        // Display file contents if read was successful
-        // ImGui::Text("File Contents:");
-        // ImGui::InputTextMultiline("##FileContents", &fileContents[0], fileContents.size(), ImVec2(500, 200));
-        // ImGui::InputTextMultiline("##fileContents", &fileContents[0], fileContents.size() + 1, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), ImGuiInputTextFlags_ReadOnly);
+         // List directory contents
+        if (ImGui::Button("List Directory Contents")) {
+            dirContents = list_directory_contents(dirName);  // Get contents of the specified directory
+            if (dirContents.rfind("Error:", 0) == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "%s", dirContents.c_str());
+                dirContents.clear();  // Clear if it's an error message
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Directory contents for: %s", dirName);
+            }
+        }
+
+        // Display directory contents if available
+        ImGui::Text("Directory Contents:");
+        
+        // Add a dummy item to push the "Clear" button to the right
+        ImGui::SameLine(ImGui::GetWindowWidth() - 70); // Adjust the value to position the button correctly
+        if (ImGui::Button("Clear")) {
+            dirContents.clear();
+        }
+        ImGui::InputTextMultiline("##dirContents", &dirContents[0], dirContents.size() + 1, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), ImGuiInputTextFlags_ReadOnly);
+
+
+
         ImGui::End();
 
         // Rendering
