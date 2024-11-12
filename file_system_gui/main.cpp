@@ -5,6 +5,13 @@
 #include <iostream>
 #include "file_operations.h"
 
+// Variables for user input
+char dirName[64] = "";
+char fileName[64] = "";
+char fileContent[256] = "";
+char statusMessage[256] = "Welcome to the File System GUI!"; // Holds the latest status message
+
+
 int main() {
     // Setup GLFW
     if (!glfwInit())
@@ -34,7 +41,7 @@ int main() {
 
   // Load and scale default font
     ImFont* font = io.Fonts->AddFontDefault();
-    
+
     if (font) {
         font->Scale = 1.5f;  // Scale font by 1.5x
     }
@@ -62,32 +69,61 @@ int main() {
         // GUI for file system operations
         ImGui::Begin("File System Operations");
 
+        // Display status message
+        // ImGui::TextWrapped(statusMessage);
+        ImGui::Text("%s", statusMessage);
+
         // Directory creation
         ImGui::InputText("Directory Name", dirName, IM_ARRAYSIZE(dirName));
         if (ImGui::Button("Create Directory")) {
-            create_directory(dirName);
+            int result = create_directory(dirName);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Directory created successfully: %s", dirName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error creating directory: %s (%s)", dirName, strerror(result));
+            }
         }
 
         ImGui::SameLine();
         if (ImGui::Button("Delete Directory")) {
-            delete_directory(dirName);
+            int result = delete_directory(dirName);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Directory deleted successfully: %s", dirName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error deleting directory: %s (%s)", dirName, strerror(result));
+            }
         }
 
         // File creation
         ImGui::InputText("File Name", fileName, IM_ARRAYSIZE(fileName));
         if (ImGui::Button("Create File")) {
-            create_file(fileName);
+            int result = create_file(fileName);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "File created successfully: %s", fileName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error creating file: %s (%s)", fileName, strerror(result));
+            }
         }
 
         // Write to file
         ImGui::InputTextMultiline("Content to Write", fileContent, IM_ARRAYSIZE(fileContent));
         if (ImGui::Button("Write to File")) {
-            write_to_file(fileName, fileContent);
+            int result = write_to_file(fileName, fileContent);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Data written to file: %s", fileName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error writing to file: %s (%s)", fileName, strerror(result));
+            }
         }
 
         // Read from file
         if (ImGui::Button("Read File")) {
-            read_file(fileName);
+            int result = read_file(fileName);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "File read successfully: %s (check console for content)", fileName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error reading file: %s (%s)", fileName, strerror(result));
+            }
         }
 
         ImGui::End();

@@ -7,52 +7,61 @@
 #include <cstdlib>
 #include <dirent.h>
 #include <iostream>
+#include <cerrno>
 
-void create_directory(const char *name) {
+int create_directory(const char *name) {
     if (mkdir(name, 0777) == -1) {
         perror("mkdir failed");
+        return errno;
     } else {
         std::cout << "Directory created: " << name << std::endl;
     }
+    return 0;
 }
 
-void delete_directory(const char *name) {
+int delete_directory(const char *name) {
     if (rmdir(name) == -1) {
         perror("rmdir failed");
+        return errno;
     } else {
         std::cout << "Directory deleted: " << name << std::endl;
     }
+    return 0;
 }
 
-void create_file(const char *name) {
+int create_file(const char *name) {
     int fd = open(name, O_CREAT | O_WRONLY, 0666);
     if (fd == -1) {
         perror("File creation failed");
+        return errno;
     } else {
         std::cout << "File created: " << name << std::endl;
         close(fd);
     }
+    return 0;
 }
 
-void write_to_file(const char *name, const char *content) {
+int write_to_file(const char *name, const char *content) {
     int fd = open(name, O_WRONLY | O_APPEND);
     if (fd == -1) {
         perror("File opening for writing failed");
-        return;
+        return errno;
     }
     if (write(fd, content, strlen(content)) == -1) {
         perror("Write failed");
+        return errno;
     } else {
         std::cout << "Data written to file: " << name << std::endl;
     }
     close(fd);
+    return 0;
 }
 
-void read_file(const char *name) {
+int read_file(const char *name) {
     int fd = open(name, O_RDONLY);
     if (fd == -1) {
         perror("File opening for reading failed");
-        return;
+        return errno;
     }
 
     char buffer[1024];
@@ -64,26 +73,31 @@ void read_file(const char *name) {
 
     if (bytesRead == -1) {
         perror("Read failed");
+        return errno;
     }
     close(fd);
+    return 0;
 }
 
-void change_directory(const char *path) {
+int change_directory(const char *path) {
     if (chdir(path) == -1) {
         perror("chdir failed");
+        return errno;
     } else {
         std::cout << "Changed directory to: " << path << std::endl;
     }
+
+    return 0;
 }
 
-void list_directory_contents() {
+int list_directory_contents() {
     DIR *dir;
     struct dirent *entry;
 
     dir = opendir(".");
     if (dir == NULL) {
         perror("opendir failed");
-        return;
+        return errno;
     }
 
     while ((entry = readdir(dir)) != NULL) {
@@ -91,4 +105,5 @@ void list_directory_contents() {
     }
 
     closedir(dir);
+    return 0;
 }
