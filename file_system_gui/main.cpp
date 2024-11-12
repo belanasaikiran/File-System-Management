@@ -4,15 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "file_operations.h"
-// Include your file system functions here
-// #include "filesystem_simulation.h"
-
-// Example functions (replace these with actual implementations)
-// void create_directory(const char* name) { /* Your implementation */ }
-// void delete_directory(const char* name) { /* Your implementation */ }
-// void create_file(const char* name) { /* Your implementation */ }
-// void write_to_file(const char* name, const char* content) { /* Your implementation */ }
-// void read_file(const char* name) { /* Your implementation */ }
 
 int main() {
     // Setup GLFW
@@ -36,9 +27,17 @@ int main() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
+  // Load and scale default font
+    ImFont* font = io.Fonts->AddFontDefault();
+    
+    if (font) {
+        font->Scale = 1.5f;  // Scale font by 1.5x
+    }
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
@@ -56,6 +55,9 @@ int main() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        // adding Docking space
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
 
         // GUI for file system operations
         ImGui::Begin("File System Operations");
