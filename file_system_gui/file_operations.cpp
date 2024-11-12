@@ -57,26 +57,28 @@ int write_to_file(const char *name, const char *content) {
     return 0;
 }
 
-int read_file(const char *name) {
+std::string read_file(const char *name) {
     int fd = open(name, O_RDONLY);
     if (fd == -1) {
         perror("File opening for reading failed");
-        return errno;
+        return "Error: " + std::string(strerror(errno));
     }
 
     char buffer[1024];
     ssize_t bytesRead;
+    std::string content;
     while ((bytesRead = read(fd, buffer, sizeof(buffer) - 1)) > 0) {
         buffer[bytesRead] = '\0';
         std::cout << buffer;
+        content += buffer;
     }
 
     if (bytesRead == -1) {
         perror("Read failed");
-        return errno;
+        content = "Error: " + std::string(strerror(errno));
     }
     close(fd);
-    return 0;
+    return content;
 }
 
 int change_directory(const char *path) {

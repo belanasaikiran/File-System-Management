@@ -6,11 +6,8 @@
 #include "file_operations.h"
 
 // Variables for user input
-char dirName[64] = "";
-char fileName[64] = "";
-char fileContent[256] = "";
 char statusMessage[256] = "Welcome to the File System GUI!"; // Holds the latest status message
-
+// std::string fileContents; // Holds the contents of the file read
 
 int main() {
     // Setup GLFW
@@ -52,7 +49,7 @@ int main() {
     // Variables for user input
     char dirName[64] = "";
     char fileName[64] = "";
-    char fileContent[256] = "";
+    char fileContent[1024] = "";
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -116,16 +113,25 @@ int main() {
             }
         }
 
+        ImGui::SameLine();
         // Read from file
         if (ImGui::Button("Read File")) {
-            int result = read_file(fileName);
-            if (result == 0) {
+            std::string content = read_file(fileName);
+            if (content.rfind("Error:",0) == 0) {
                 snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "File read successfully: %s (check console for content)", fileName);
+                // fileContents.clear(); // clear if there was an error
+                fileContent[0] = '\0';
             } else {
-                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error reading file: %s (%s)", fileName, strerror(result));
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "File read successfully: %s", fileName);
+                strncpy(fileContent, content.c_str(), IM_ARRAYSIZE(fileContent) - 1); // load content into buffer
+                fileContent[IM_ARRAYSIZE(fileContent) - 1] = '\0'; // null-terminate
             }
         }
 
+        // Display file contents if read was successful
+        // ImGui::Text("File Contents:");
+        // ImGui::InputTextMultiline("##FileContents", &fileContents[0], fileContents.size(), ImVec2(500, 200));
+        // ImGui::InputTextMultiline("##fileContents", &fileContents[0], fileContents.size() + 1, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), ImGuiInputTextFlags_ReadOnly);
         ImGui::End();
 
         // Rendering
