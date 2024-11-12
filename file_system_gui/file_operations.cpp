@@ -20,6 +20,42 @@ int create_directory(const char *name) {
 }
 
 int delete_directory(const char *name) {
+    DIR *dir = opendir(name);
+    if (dir == NULL) {
+        perror("opendir failed");
+        return errno;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
+        std::string path = std::string(name) + "/" + entry->d_name;
+        struct stat statbuf;
+        if (stat(path.c_str(), &statbuf) == -1) {
+            perror("stat failed");
+            closedir(dir);
+            return errno;
+        }
+
+        if (S_ISDIR(statbuf.st_mode)) {
+            if (delete_directory(path.c_str()) != 0) {
+                closedir(dir);
+                return errno;
+            }
+        } else {
+            if (unlink(path.c_str()) == -1) {
+                perror("unlink failed");
+                closedir(dir);
+                return errno;
+            }
+        }
+    }
+
+    closedir(dir);
+
     if (rmdir(name) == -1) {
         perror("rmdir failed");
         return errno;
