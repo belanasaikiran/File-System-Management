@@ -12,7 +12,19 @@ char fileContent[1024] = "";
 char statusMessage[256] = "Welcome to the File System GUI!"; // Holds the latest status message
 std::string dirContents;
 
+char oldName[64] = "";
+char newName[64] = "";
+char moveSource[64] = "";
+char moveDestination[64] = "";
+char copySource[64] = "";
+char copyDestination[64] = "";
+// Declare a string to hold the mode as a string for display
+char newPermissionsStr[16];  // Buffer to hold permission string (e.g., "0644")
+mode_t newPermissions = 0644; // Default permissions
+
+
 int main() {
+    snprintf(newPermissionsStr, sizeof(newPermissionsStr), "%o", newPermissions);
     // Setup GLFW
     if (!glfwInit())
         return -1;
@@ -160,7 +172,57 @@ int main() {
         }
         ImGui::InputTextMultiline("##dirContents", &dirContents[0], dirContents.size() + 1, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), ImGuiInputTextFlags_ReadOnly);
 
+        // New Operations: Rename, Move, Copy, Permissions, etc.
 
+        // Rename File/Directory
+        ImGui::InputText("Old Name (Rename)", oldName, IM_ARRAYSIZE(oldName));
+        ImGui::InputText("New Name (Rename)", newName, IM_ARRAYSIZE(newName));
+        if (ImGui::Button("Rename")) {
+            int result = rename_file_or_directory(oldName, newName);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Renamed successfully: %s -> %s", oldName, newName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error renaming: %s -> %s", oldName, newName);
+            }
+        }
+
+        // Move File/Directory
+        ImGui::InputText("Move Source", moveSource, IM_ARRAYSIZE(moveSource));
+        ImGui::InputText("Move Destination", moveDestination, IM_ARRAYSIZE(moveDestination));
+        if (ImGui::Button("Move")) {
+            int result = move_file_or_directory(moveSource, moveDestination);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Moved successfully: %s -> %s", moveSource, moveDestination);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error moving: %s -> %s", moveSource, moveDestination);
+            }
+        }
+
+        // Copy File
+        ImGui::InputText("Copy Source", copySource, IM_ARRAYSIZE(copySource));
+        ImGui::InputText("Copy Destination", copyDestination, IM_ARRAYSIZE(copyDestination));
+        if (ImGui::Button("Copy")) {
+            int result = copy_file(copySource, copyDestination);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Copied successfully: %s -> %s", copySource, copyDestination);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error copying: %s -> %s", copySource, copyDestination);
+            }
+        }
+
+        // Change File Permissions
+        ImGui::InputText("New Permissions", newPermissionsStr, sizeof(newPermissionsStr));
+        if (ImGui::Button("Change Permissions")) {
+            // Convert the string back to mode_t
+            mode_t parsedPermissions = strtol(newPermissionsStr, nullptr, 8);  // Convert octal string to mode_t
+
+            int result = change_permissions(fileName, parsedPermissions);
+            if (result == 0) {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Permissions changed successfully: %s", fileName);
+            } else {
+                snprintf(statusMessage, IM_ARRAYSIZE(statusMessage), "Error changing permissions: %s", strerror(result));
+            }
+        }
 
         ImGui::End();
 
