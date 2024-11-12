@@ -4,10 +4,29 @@
 
 ### Steps to Build and Run the program. 
 
+
+0. Install the necessary libraries
+
+    ```bash
+    sudo apt update
+    sudo apt install libglfw3-dev libgl1-mesa-dev 
+
+    sudo apt install libx11-dev libxrandr-dev libxi-dev libxxf86vm-dev libxcursor-dev
+
+    sudo apt install cmake
+
+
 1. Firstly, clone the ImGUI git repository into this project directory. We use the docking branch since it provides option to resize the windows according to our wish
 
     ```bash
     git clone --recursive https://github.com/ocornut/imgui -b docking
+
+    # build the imgui
+    cd imgui
+    mkdir build
+    cd build
+    cmake ..
+    make 
     ```
 
 2. go to `file_system_gui` directory, and run the make command. 
