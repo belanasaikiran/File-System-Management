@@ -9,7 +9,7 @@
 
     ```bash
     sudo apt update
-    sudo apt install libglfw3-dev libgl1-mesa-dev 
+    sudo apt install gcc g++ build-essential libglfw3-dev libgl1-mesa-dev 
 
     sudo apt install libx11-dev libxrandr-dev libxi-dev libxxf86vm-dev libxcursor-dev
 
