@@ -16,13 +16,6 @@
 
     ```bash
     git clone --recursive https://github.com/ocornut/imgui -b docking
-
-    # build the imgui
-    cd imgui
-    mkdir build
-    cd build
-    cmake ..
-    make 
     ```
 
 2. go to `file_system_gui` directory, and run the make command. 
