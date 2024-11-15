@@ -55,4 +55,4 @@ Implemented process scheduler algorithms which produces the waiting time, turnar
 
 ![P1](./images/process_scheduler_p1.png)
 
-
+![P2](./images/process_scheduler_p2.png)
