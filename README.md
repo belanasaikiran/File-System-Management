@@ -36,9 +36,23 @@
 
 ### Test Screenshots:
 
-1. GUI:
-
-![File Sys GUI Screen Short](./images/file_system_gui_image.png)
-
-2. File Sys 2:
+![File Sys GUI Screenshot](./images/file_system_gui_image.png)
 ![File Sys Implementation 2](./images/file_sys_gui_implementation_2.png)
+
+
+## Process Scheduler
+
+Implemented process scheduler algorithms which produces the waiting time, turnaround time.
+
+### Algorithms implemented
+
+- FCFS - first come first serve
+- Round Robin
+- SJF - Shortest Job First
+- Priority Scheduling
+
+### Test Screenshots
+
+![P1](./images/process_scheduler_p1.png)
+
+

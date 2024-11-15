@@ -16,7 +16,7 @@ int main() {
         return -1;
 
     // Create a windowed mode window and OpenGL context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "File System Simulation", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Process Scheduler", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
