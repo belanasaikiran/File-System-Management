@@ -8,6 +8,9 @@
 #include <dirent.h>
 #include <iostream>
 #include <cerrno>
+#include <sys/statvfs.h>
+
+struct stat statbuf;
 
 int create_directory(const char *name) {
     if (mkdir(name, 0777) == -1) {
@@ -64,6 +67,171 @@ int delete_directory(const char *name) {
     }
     return 0;
 }
+
+int rename_file_or_directory(const char *old_name, const char *new_name) {
+    if (rename(old_name, new_name) == -1) {
+        perror("rename failed");
+        return errno;
+    } else {
+        std::cout << "Renamed: " << old_name << " to " << new_name << std::endl;
+    }
+    return 0;
+}
+
+int move_file_or_directory(const char *source, const char *destination) {
+    if (rename(source, destination) == 0) {
+        std::cout << "Moved: " << source << " to " << destination << std::endl;
+        return 0;
+    } else {
+        perror("rename failed");
+        // Attempt copy and delete if rename fails (for cross-filesystem moves)
+        // if (S_ISDIR(stat(destination, &statbuf)) && copy_directory(source, destination) != 0){
+        //     return -1;
+        // }  
+    }
+}
+
+
+int copy_file(const char *source, const char *destination) {
+    int source_fd = open(source, O_RDONLY);
+    if (source_fd == -1) {
+        perror("open source file failed");
+        return errno;
+    }
+
+    int dest_fd = open(destination, O_CREAT | O_WRONLY, 0666);
+    if (dest_fd == -1) {
+        perror("open destination file failed");
+        close(source_fd);
+        return errno;
+    }
+
+    char buffer[1024];
+    ssize_t bytes_read;
+    while ((bytes_read = read(source_fd, buffer, sizeof(buffer))) > 0) {
+        if (write(dest_fd, buffer, bytes_read) == -1) {
+            perror("write to destination file failed");
+            close(source_fd);
+            close(dest_fd);
+            return errno;
+        }
+    }
+
+    if (bytes_read == -1) {
+        perror("read from source file failed");
+    } else {
+        std::cout << "File copied from " << source << " to " << destination << std::endl;
+    }
+
+    close(source_fd);
+    close(dest_fd);
+    return 0;
+}
+
+
+bool exists(const char *path) {
+    struct stat statbuf;
+    return (stat(path, &statbuf) == 0);
+}
+
+void get_file_info(const char *path) {
+    struct stat statbuf;
+    if (stat(path, &statbuf) == -1) {
+        perror("stat failed");
+        return;
+    }
+
+    std::cout << "File: " << path << std::endl;
+    std::cout << "Size: " << statbuf.st_size << " bytes" << std::endl;
+    std::cout << "Permissions: " << (statbuf.st_mode & 0777) << std::endl;
+    std::cout << "Last modified: " << ctime(&statbuf.st_mtime);
+    std::cout << "Last accessed: " << ctime(&statbuf.st_atime);
+    std::cout << "Creation time: " << ctime(&statbuf.st_ctime);
+}
+
+
+int change_permissions(const char *path, mode_t mode) {
+    if (chmod(path, mode) == -1) {
+        perror("chmod failed");
+        return errno;
+    } else {
+        std::cout << "Permissions changed for: " << path << std::endl;
+    }
+    return 0;
+}
+
+
+int create_symlink(const char *target, const char *linkpath) {
+    if (symlink(target, linkpath) == -1) {
+        perror("symlink creation failed");
+        return errno;
+    } else {
+        std::cout << "Symbolic link created: " << linkpath << " -> " << target << std::endl;
+    }
+    return 0;
+}
+
+
+void get_disk_usage(const char* path) {
+    struct statvfs stat;
+    
+    // Get filesystem stats
+    if (statvfs(path, &stat) != 0) {
+        perror("statvfs failed");
+        return;
+    }
+
+    // You can now use the stat structure to get disk usage info
+    unsigned long free_space = stat.f_bfree * stat.f_frsize;
+    unsigned long total_space = stat.f_blocks * stat.f_frsize;
+    unsigned long used_space = total_space - free_space;
+
+    std::cout << "Free space: " << free_space << " bytes\n";
+    std::cout << "Used space: " << used_space << " bytes\n";
+    std::cout << "Total space: " << total_space << " bytes\n";
+}
+
+
+void check_file_or_directory(const char *path) {
+    struct stat statbuf;
+    if (stat(path, &statbuf) == -1) {
+        perror("stat failed");
+        return;
+    }
+
+    if (S_ISDIR(statbuf.st_mode)) {
+        std::cout << path << " is a directory.\n";
+    } else if (S_ISREG(statbuf.st_mode)) {
+        std::cout << path << " is a regular file.\n";
+    } else {
+        std::cout << path << " is some other type of file.\n";
+    }
+}
+
+
+std::string search_file_in_directory(const char *dir_path, const char *file_name) {
+    DIR *dir = opendir(dir_path);
+    if (!dir) {
+        perror("opendir failed");
+        return "Error: " + std::string(strerror(errno));
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, file_name) == 0) {
+            std::string full_path = std::string(dir_path) + "/" + entry->d_name;
+            closedir(dir);
+            return full_path;
+        }
+    }
+
+    closedir(dir);
+    return "File not found";
+}
+
+
+
+
 
 int create_file(const char *name) {
     int fd = open(name, O_CREAT | O_WRONLY, 0666);
