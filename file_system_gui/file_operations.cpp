@@ -10,7 +10,7 @@
 #include <cerrno>
 #include <sys/statvfs.h>
 
-struct stat statbuf;
+struct stat get_file_info(const char *path);
 
 int create_directory(const char *name) {
     if (mkdir(name, 0777) == -1) {
@@ -134,19 +134,23 @@ bool exists(const char *path) {
     return (stat(path, &statbuf) == 0);
 }
 
-void get_file_info(const char *path) {
+struct stat get_file_info(const char *path){
     struct stat statbuf;
+
     if (stat(path, &statbuf) == -1) {
         perror("stat failed");
-        return;
+        return statbuf;
     }
 
-    std::cout << "File: " << path << std::endl;
-    std::cout << "Size: " << statbuf.st_size << " bytes" << std::endl;
-    std::cout << "Permissions: " << (statbuf.st_mode & 0777) << std::endl;
-    std::cout << "Last modified: " << ctime(&statbuf.st_mtime);
-    std::cout << "Last accessed: " << ctime(&statbuf.st_atime);
-    std::cout << "Creation time: " << ctime(&statbuf.st_ctime);
+    // std::cout << "File: " << path << std::endl;
+    // std::cout << "Size: " << statbuf.st_size << " bytes" << std::endl;
+    // std::cout << "Permissions: " << (statbuf.st_mode & 0777) << std::endl;
+    // std::cout << "Last modified: " << ctime(&statbuf.st_mtime);
+    // std::cout << "Last accessed: " << ctime(&statbuf.st_atime);
+    // std::cout << "Creation time: " << ctime(&statbuf.st_ctime);
+
+    return statbuf;
+
 }
 
 
@@ -172,13 +176,13 @@ int create_symlink(const char *target, const char *linkpath) {
 }
 
 
-void get_disk_usage(const char* path) {
+struct statvfs  get_disk_usage(const char* path) {
     struct statvfs stat;
     
     // Get filesystem stats
     if (statvfs(path, &stat) != 0) {
         perror("statvfs failed");
-        return;
+        return stat;
     }
 
     // You can now use the stat structure to get disk usage info
@@ -186,9 +190,12 @@ void get_disk_usage(const char* path) {
     unsigned long total_space = stat.f_blocks * stat.f_frsize;
     unsigned long used_space = total_space - free_space;
 
-    std::cout << "Free space: " << free_space << " bytes\n";
-    std::cout << "Used space: " << used_space << " bytes\n";
-    std::cout << "Total space: " << total_space << " bytes\n";
+    // std::cout << "Free space: " << free_space << " bytes\n";
+    // std::cout << "Used space: " << used_space << " bytes\n";
+    // std::cout << "Total space: " << total_space << " bytes\n";
+
+    return stat;
+
 }
 
 
