@@ -2,6 +2,26 @@
 
 ## File System using ImGUI
 
+### Implemented Functions
+
+| **Operation**            | **Function**                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| Create Directory          | `create_directory(dirName)`                                                |
+| Delete Directory          | `delete_directory(dirName)`                                                |
+| Create File               | `create_file(fileName)`                                                    |
+| Delete File               | `delete_file(fileName)`                                                    |
+| Write to File             | `write_to_file(fileName, fileContent.c_str())`                             |
+| Read File                 | `read_file(fileName)`                                                      |
+| Get File Info             | `get_file_info(filePath)`                                                  |
+| List Directory Contents   | `list_directory_contents(filePath)`                                        |
+| Rename File/Directory     | `rename_file_or_directory(oldName, newName)`                               |
+| Move File/Directory       | `move_file_or_directory(moveCopySource, moveCopyDestination)`              |
+| Copy File                 | `copy_file(moveCopySource, moveCopyDestination)`                          |
+| Change File Permissions   | `change_permissions(fileName, parsedPermissions)`                         |
+| Get Disk Usage            | `get_disk_usage(".")`                                                     |
+
+
+
 ### Steps to Build and Run the program. 
 
 
@@ -36,9 +56,13 @@
 
 ### Test Screenshots:
 
-![File Sys GUI Screenshot](./images/file_system_gui_image.png)
-![File Sys Implementation 2](./images/file_sys_gui_implementation_2.png)
+![image 1](./images/final_UI.png)
 
+![image 2](./images/final_exec.png)
+
+
+
+<!-- 
 
 ## Process Scheduler
 
@@ -55,4 +79,4 @@ Implemented process scheduler algorithms which produces the waiting time, turnar
 
 ![P1](./images/process_scheduler_p1.png)
 
-![P2](./images/process_scheduler_p2.png)
+![P2](./images/process_scheduler_p2.png) -->
