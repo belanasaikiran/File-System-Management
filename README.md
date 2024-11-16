@@ -37,6 +37,7 @@
     ```bash
     git clone --recursive https://github.com/ocornut/imgui -b docking
     ```
+> NOTE: the `imgui` folder should be at ROOT i.e., one dir behind AllinOne or file_system_gui folder.
 
 2. go to `file_system_gui` directory, and run the make command. 
 
@@ -52,6 +53,17 @@
     ```bash
     ./file_Sys_gui
     ```
+
+### Diretory Structure for this project:
+
+```bash
+.
+├── FileSys_GUI
+├── imgui
+├── Output_ScreenShots
+└── README.md
+```
+
 
 
 ### Test Screenshots:
