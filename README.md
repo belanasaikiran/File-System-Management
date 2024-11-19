@@ -1,6 +1,12 @@
-# OS-GroupProject
+# File-System-Management
 
-## File System using ImGUI
+This project implements a file system GUI using Dear ImGui, a graphical interface library. It enables users to perform file system operations including file and directory management, disk usage monitoring, and file modification.
+
+Implemented in C++ with OpenGL for rendering
+
+> OS-GroupProject
+
+
 
 ### Implemented Functions
 
